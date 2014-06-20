@@ -1,0 +1,9 @@
+{
+    "autoload": {
+        "psr-4": { "Bonfire\\Assets\\": "src/" }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "league/flysystem": "0.5.*@dev"
+    }
+}
