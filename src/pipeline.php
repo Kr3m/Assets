@@ -115,12 +115,12 @@ $filters = array(
     '.min.js'       => array(),
     '.min.css'      => array(),
     '.js'           => array(
-        '\Bonfire\Assets\Filters\JSCompress'
+        '\Bonfire\Assets\Filters\JSMin'
     ),
     '.js.coffee'    => array(),
     '.coffee'       => array(),
     '.css'          => array(
-        ['\Bonfire\Assets\Filters\CSSCompress', [ 'filters'=> ['ImportImports' => true]] ]
+        ['\Bonfire\Assets\Filters\CSSMin', [ 'filters'=> ['ImportImports' => true]] ]
     ),
     '.css.less'     => array(),
     '.css.scss'     => array(),

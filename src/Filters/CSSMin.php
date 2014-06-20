@@ -10,7 +10,7 @@ use Bonfire\Assets\Asset;
  * @link http://code.google.com/p/cssmin
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
  */
-class CSSCompress implements FilterInterface {
+class CSSMin implements FilterInterface {
 
     protected $filters = [
         "ImportImports"                 => false,
