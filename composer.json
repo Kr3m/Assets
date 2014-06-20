@@ -5,5 +5,20 @@
     "require": {
         "php": ">=5.4.0",
         "league/flysystem": "0.5.*@dev"
-    }
+    },
+    "require-dev": {
+        "cssmin/cssmin": "*",
+        "mrclay/minify": "*"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "cssmin/cssmin",
+                "version": "3.0.1",
+                "dist": { "url": "http://cssmin.googlecode.com/files/cssmin-v3.0.1.php", "type": "file" },
+                "autoload": { "classmap": [ "cssmin-v3.0.1.php" ] }
+            }
+        }
+    ]
 }

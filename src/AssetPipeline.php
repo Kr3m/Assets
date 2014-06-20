@@ -95,8 +95,25 @@ class AssetPipeline
 
         foreach ( $this->filters[ $asset->getExtension() ] as $filter)
         {
-            // Instantiate a copy of the filter
-            $class = new $filter();
+            // When parameters are passed as an array,
+            // the first is the name of the class,
+            // while the others are parameters that are passed
+            // into the class constructor
+            if (is_array($filter))
+            {
+                $class_name = $filter[0];
+
+                if (! isset($filter[1]))
+                {
+                    $filter[1] = null;
+                }
+
+                $class = new $class_name( $filter[1] );
+            }
+            else
+            {
+                $class = new $filter();
+            }
 
             $class->run( $asset );
 
