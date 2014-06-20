@@ -115,7 +115,7 @@ $filters = array(
     '.min.js'       => array(),
     '.min.css'      => array(),
     '.js'           => array(
-        '\Bonfire\Assets\Filters\JSMin'
+        '\Bonfire\Assets\Filters\JSMinPlus'
     ),
     '.js.coffee'    => array(),
     '.coffee'       => array(),
