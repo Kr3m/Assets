@@ -4,6 +4,12 @@ namespace Bonfire\Assets\Filters;
 
 use Bonfire\Assets\Asset;
 
+/**
+ * Filters assets through CssMin.
+ *
+ * @link http://code.google.com/p/cssmin
+ * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ */
 class CSSCompress implements FilterInterface {
 
     protected $filters = [
