@@ -127,6 +127,9 @@ $filters = array(
     '.less'         => array(),
     '.scss'         => array(),
     '.min.css'      => array(),
+    'html'          => array(
+        '\Bonfire\Assets\Filters\JSMinPlus'
+    )
 );
 
 //--------------------------------------------------------------------

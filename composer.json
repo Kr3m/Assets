@@ -1,4 +1,16 @@
 {
+    "name": "ci-bonfire/Assets",
+    "description": "A platform-agnostic, lightweight Asset Pipeline for PHP 5.4+",
+    "keywords": "assets", "bonfire", "minification",
+    "homepage": "https://github.com/ci-bonfire/Assets",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lonnie Ezell",
+            "email": "lonnieje@gmail.com",
+            "homepage": "http://lonnieezell.com"
+        }
+    ],
     "autoload": {
         "psr-4": { "Bonfire\\Assets\\": "src/" }
     },
