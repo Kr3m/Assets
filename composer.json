@@ -1,5 +1,5 @@
 {
-    "name": "ci-bonfire/Assets",
+    "name": "ci-bonfire/assets",
     "description": "A platform-agnostic, lightweight Asset Pipeline for PHP 5.4+",
     "keywords": ["assets", "bonfire", "minification"],
     "homepage": "https://github.com/ci-bonfire/Assets",
