@@ -234,7 +234,7 @@ class Asset {
      *
      * @return bool
      */
-    public function locateFile ()
+    protected function locateFile ()
     {
         if (! is_array($this->asset_folders) || ! count($this->asset_folders))
         {
@@ -269,16 +269,18 @@ class Asset {
      * @param      $local       An instance of the FlySystem
      * @param null $folder      The location of the folder, just in case
      */
-    public function getFileInfo ($local, $folder=null)
+    protected function getFileInfo ($local, $folder=null)
     {
         $this->file_timestamp = $local->getTimestamp($this->filename);
 
         $this->file_mime = $this->determineFileMime( $this->filename );
+
+        $this->file_extension = $this->determineFileExtension( $this->filename );
     }
 
     //--------------------------------------------------------------------
 
-    public function determineFileMime ($filename)
+    protected function determineFileMime ($filename)
     {
         if (empty($filename)) return null;
 
@@ -317,6 +319,8 @@ class Asset {
 
             if (array_key_exists($ext, $extensions))
             {
+                $this->file_type = $group;
+
                 return $extensions[$ext];
             }
         }
@@ -328,14 +332,42 @@ class Asset {
     //--------------------------------------------------------------------
 
     /**
+     * Attempts to determine the correct file extension, accounting for any
+     * double/triple extensions that might be included in user_mimes, like
+     * .min.js, etc.
+     *
+     * @param $filename
+     * @return mixed
+     */
+    protected function determineFileExtension ($filename)
+    {
+        // First, check our user_mimes for custom extensions.
+        if (count($this->user_mime_types))
+        {
+            foreach ($this->user_mime_types as $mime => $filters)
+            {
+                if (strpos($filename, $mime) !== false)
+                {
+                    return $mime;
+                }
+            }
+        }
+
+        // Nothing found in the user mimes? then do the simple thing
+        return pathinfo($this->filename, PATHINFO_EXTENSION);
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
      * Determines if a file is any type of URI (http, https, ftp, etc)
      *
      * @param $path
      * @return bool
      */
-    protected function is_uri($path)
+    protected function isUri($path)
     {
-        return (bool)preg_match('/^[a-z]+L\/\//', $path);
+        return (bool)preg_match('/^[a-z]+:\/\//', $path);
     }
 
     //--------------------------------------------------------------------
