@@ -125,8 +125,13 @@ class Asset {
 
     //--------------------------------------------------------------------
 
-    public function __construct ($filename, $folders = [], $mime_types = [])
+    public function __construct ($filename='', $folders = [], $mime_types = [])
     {
+        if (empty($filename))
+        {
+            throw new \RuntimeException('A filename must be provided in the Asset constructor.');
+        }
+
         $this->filename = $filename;
 
         $this->asset_folders = $folders;
