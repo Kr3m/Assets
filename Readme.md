@@ -1,5 +1,7 @@
 # Bonfire Assets
 
+[![Build Status](https://travis-ci.org/ci-bonfire/Assets.svg?branch=develop)](https://travis-ci.org/ci-bonfire/Assets)
+
 WARNING: Currently under heavy initial development. More docs and stuff coming soon.
 
 Bonfire's Assets package is a framework-agnostic Asset Pipeline implemetation for PHP 5.4+. 
