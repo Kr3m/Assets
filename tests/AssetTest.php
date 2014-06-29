@@ -1,7 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-
 include 'vendor/autoload.php';
 include 'tests/resources/BaseTest.php';
 
@@ -79,4 +77,31 @@ class AssetTest extends BaseTest {
 
     //--------------------------------------------------------------------
 
+    public function testGetContentReturnsNullOnBadFile ()
+    {
+        $asset = new \Bonfire\Assets\Asset('missingfile.js', ['./tests/resources/']);
+        $this->assertNull($asset->getContent());
+    }
+
+    //--------------------------------------------------------------------
+
+    public function testGetContentReturnsValidJSContent ()
+    {
+        $jquery = file_get_contents('tests/resources/jquery.js');
+
+        $asset = new \Bonfire\Assets\Asset('jquery.js', ['./tests/resources/']);
+        $this->assertEquals($asset->getContent(), $jquery);
+    }
+
+    //--------------------------------------------------------------------
+
+    public function testGetContentReturnsValidCSSContent ()
+    {
+        $file = file_get_contents('tests/resources/test.css');
+
+        $asset = new \Bonfire\Assets\Asset('test.css', ['./tests/resources/']);
+        $this->assertEquals($asset->getContent(), $file);
+    }
+
+    //--------------------------------------------------------------------
 }

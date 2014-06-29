@@ -25,6 +25,8 @@ class Asset {
      */
     protected $filepath = null;
 
+    protected $file_subfolder = '';
+
     /**
      * The 'type' of asset, which is divided into 7 categories:
      *
@@ -52,6 +54,15 @@ class Asset {
     protected $file_extension = null;
 
     protected $asset_folders = [];
+
+    protected $asset_type_folders = [
+        'stylesheet'        => 'css',
+        'javascript'        => 'js',
+        'images'            => 'img',
+        'audio'             => 'audio',
+        'video'             => 'video',
+        'flash'             => 'flash'
+    ];
 
     /**
      * Stores any user-contributed 'mime types'
@@ -125,11 +136,16 @@ class Asset {
 
     //--------------------------------------------------------------------
 
-    public function __construct ($filename='', $folders = [], $mime_types = [])
+    public function __construct ($filename='', $folders = [], $mime_types = [], $asset_type_folders=null)
     {
-        if (empty($filename))
+        if (empty($filename) || !is_string($filename))
         {
             throw new \RuntimeException('A filename must be provided in the Asset constructor.');
+        }
+
+        if (! empty($asset_type_folders))
+        {
+            $this->asset_type_folders = $asset_type_folders;
         }
 
         $this->filename = $filename;
@@ -170,6 +186,7 @@ class Asset {
                 case 'stylesheet':
                 case 'javascript':
                     $contents = file_get_contents($file);
+                    $contents = $this->handleDirectives($contents);
                     break;
                 case 'flash':
                 case 'audio':
@@ -184,6 +201,7 @@ class Asset {
                 case 'file':
                     // We'll attempt to grab the contents
                     $contents = file_get_contents($file);
+                    $contents = $this->handleDirectives($contents);
                     break;
             }
         }
@@ -236,6 +254,8 @@ class Asset {
      */
     protected function locateFile ()
     {
+        $this->file_mime = $this->determineFileMime( $this->filename );
+
         if (! is_array($this->asset_folders) || ! count($this->asset_folders))
         {
             return false;
@@ -247,11 +267,26 @@ class Asset {
 
             $local = new Filesystem( new Adapter($folder) );
 
+            // Try without the asset-type folder
             if ($local->has($this->filename))
             {
                 $this->filepath = $folder;
 
                 return $this->getFileInfo($local, $folder);
+            }
+
+            if (! isset($this->asset_type_folders[ $this->file_type ]))
+            {
+                continue;
+            }
+
+            // Not here? Try with an asset folder
+            if ($local->has( $this->asset_type_folders[ $this->file_type ] .'/'. $this->filename ))
+            {
+                $this->filepath = $folder . $this->asset_type_folders[ $this->file_type ] .'/';
+                $this->file_subfolder = $this->asset_type_folders[ $this->file_type ];
+
+                return $this->getFileInfo($local, $this->file_subfolder);
             }
 
             unset($local);
@@ -267,15 +302,15 @@ class Asset {
      * as well as the more detailed mime types, etc.
      *
      * @param      $local       An instance of the FlySystem
-     * @param null $folder      The location of the folder, just in case
      */
-    protected function getFileInfo ($local, $folder=null)
+    protected function getFileInfo ($local)
     {
-        $this->file_timestamp = $local->getTimestamp($this->filename);
-
-        $this->file_mime = $this->determineFileMime( $this->filename );
+        $this->file_timestamp = $local->getTimestamp($this->file_subfolder .'/'. $this->filename);
 
         $this->file_extension = $this->determineFileExtension( $this->filename );
+
+        // Ensure the extension has the leading period.
+        $this->file_extension = '.'. ltrim($this->file_extension, '. ');
     }
 
     //--------------------------------------------------------------------
@@ -368,6 +403,35 @@ class Asset {
     protected function isUri($path)
     {
         return (bool)preg_match('/^[a-z]+:\/\//', $path);
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
+     * Attempts to parse the file contents (str or array) for any directives.
+     * If directives are found, they are parsed and their content added to
+     * our current content.
+     *
+     * Basically, reads in the contents of our different files and joins them.
+     *
+     * @param $contents
+     * @return string
+     */
+    protected function handleDirectives( $contents )
+    {
+        $parser = new \Bonfire\Assets\Directives\DirectivesParser();
+
+        $files = $parser->parse( $contents, $this->filename );
+
+        if (is_array($files))
+        {
+            foreach ($files as $file)
+            {
+                $contents = "\n\n". file_get_contents($file);
+            }
+        }
+
+        return $contents;
     }
 
     //--------------------------------------------------------------------

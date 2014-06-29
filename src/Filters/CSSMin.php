@@ -38,12 +38,12 @@ class CSSMin implements FilterInterface {
 
     public function __construct ($params = [])
     {
-        if (isset($params['filters']))
+        if (isset($params['filters']) && is_array($params['filters']))
         {
             $this->filters = array_merge($this->filters, $params['filters']);
         }
 
-        if (is_array($params['plugins']))
+        if (isset($params['plugins']) && is_array($params['plugins']))
         {
             $this->plugins = array_merge($this->plugins, $params['plugins']);
         }

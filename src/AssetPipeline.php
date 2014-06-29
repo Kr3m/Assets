@@ -48,7 +48,7 @@ class AssetPipeline
 
     //--------------------------------------------------------------------
 
-    public function __construct ($config = NULL, $filters = array())
+    public function __construct ($filename=null, $config = NULL, $filters = array())
     {
         if (is_array($config) && count($config))
         {
@@ -63,7 +63,12 @@ class AssetPipeline
 
         $this->filters = $filters;
 
-        $this->detectFile();
+        $this->filename = $filename;
+
+        if (is_null($filename))
+        {
+            $this->detectFile();
+        }
     }
 
     //--------------------------------------------------------------------
@@ -76,7 +81,7 @@ class AssetPipeline
      */
     public function process ()
     {
-        $asset = new Asset( $this->filename, $this->asset_folders, $this->mime_types);
+        $asset = new Asset( $this->filename, $this->asset_folders, $this->mime_types, $this->asset_type_folders);
 
         $this->applyFilters($asset);
 
@@ -85,14 +90,21 @@ class AssetPipeline
 
     //--------------------------------------------------------------------
 
+    /**
+     * Applies any specified filters to the contents of the
+     *
+     * @param Asset $asset
+     */
     public function applyFilters (Asset $asset)
     {
+        // Are there any available filters listed for this type of asset?
         if (! isset($this->filters[ $asset->getExtension() ]) ||
             ! is_array( $this->filters[ $asset->getExtension() ] ))
         {
             return;
         }
 
+        // Run the filters on the asset's content, modifying it as we go...
         foreach ( $this->filters[ $asset->getExtension() ] as $filter)
         {
             // When parameters are passed as an array,
@@ -115,6 +127,7 @@ class AssetPipeline
                 $class = new $filter();
             }
 
+            // The classes are responsible for modifying the classes contents.
             $class->run( $asset );
 
             unset($class);
@@ -134,11 +147,10 @@ class AssetPipeline
      *
      * Called during the constructor.
      */
-    private function detectFile ()
+    private function detectFile ($file=null)
     {
         // Get our Request URI and strip any $_GET vars
         $uri = basename( $_SERVER['REQUEST_URI'] );
-//        $uri = substr($uri, 0, strpos($uri, '?'));
 
         if (empty($uri))
         {

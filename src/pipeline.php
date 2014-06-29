@@ -120,7 +120,7 @@ $filters = array(
     '.js.coffee'    => array(),
     '.coffee'       => array(),
     '.css'          => array(
-        ['\Bonfire\Assets\Filters\CSSMin', [ 'filters'=> ['ImportImports' => true]] ]
+        ['\Bonfire\Assets\Filters\CSSMin', [ 'filters'=> ['ImportImports' => false]] ]
     ),
     '.css.less'     => array(),
     '.css.scss'     => array(),
