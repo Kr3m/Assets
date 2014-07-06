@@ -438,7 +438,7 @@ class Asset {
 
         if (is_array($this->tags) && count($this->tags))
         {
-            $parser->registerTags($tags);
+            $parser->registerTags($this->tags);
         }
 
         $files = $parser->parse( $contents, $this->filename );
