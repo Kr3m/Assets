@@ -46,6 +46,8 @@ class AssetPipeline
 
     protected $filename = null;
 
+    protected $tags = array();
+
     //--------------------------------------------------------------------
 
     public function __construct ($filename=null, $config = NULL, $filters = array())
@@ -82,6 +84,8 @@ class AssetPipeline
     public function process ()
     {
         $asset = new Asset( $this->filename, $this->asset_folders, $this->mime_types, $this->asset_type_folders);
+
+        $asset->registerTags($this->tags);
 
         $this->applyFilters($asset);
 
@@ -132,6 +136,13 @@ class AssetPipeline
 
             unset($class);
         }
+    }
+
+    //--------------------------------------------------------------------
+
+    public function registerTag ($name, \Closure $callback)
+    {
+        $this->tags[$name] = $callback;
     }
 
     //--------------------------------------------------------------------

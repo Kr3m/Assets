@@ -32,7 +32,7 @@ $config = array(
      * defined 'assets' folder so they can be served up as static
      * files by the server and have the fastest performance.
      */
-    'environment'           => 'development',
+    'environment'           => 'development',   // @todo - change environment to a simple 'build_static_files' setting.
 
     /*
      * The folder, relative to this script, where the assets should

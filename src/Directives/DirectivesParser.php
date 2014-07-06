@@ -195,6 +195,22 @@ class DirectivesParser {
     // Tags
     //--------------------------------------------------------------------
 
+    public function registerTags ($tags)
+    {
+        if (! is_array($tags) || ! count($tags))
+        {
+            return;
+        }
+
+        foreach ($tags as $name => $callback)
+        {
+            $this->registerTag($name, $callback);
+        }
+    }
+
+    //--------------------------------------------------------------------
+
+
     /**
      * Registers a tag pattern to be used when processing directive paths.
      *

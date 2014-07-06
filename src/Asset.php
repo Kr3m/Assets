@@ -134,6 +134,8 @@ class Asset {
         ]
     ];
 
+    protected $tags = array();
+
     //--------------------------------------------------------------------
 
     public function __construct ($filename='', $folders = [], $mime_types = [], $asset_type_folders=null)
@@ -209,6 +211,19 @@ class Asset {
         $this->content = $contents;
 
         return $this->content;
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
+     * Holds onto tags while we're waiting
+     * to process the directives.
+     *
+     * @param $tags
+     */
+    public function registerTags ($tags)
+    {
+        $this->tags = $tags;
     }
 
     //--------------------------------------------------------------------
@@ -420,6 +435,11 @@ class Asset {
     protected function handleDirectives( $contents )
     {
         $parser = new \Bonfire\Assets\Directives\DirectivesParser();
+
+        if (is_array($this->tags) && count($this->tags))
+        {
+            $parser->registerTags($tags);
+        }
 
         $files = $parser->parse( $contents, $this->filename );
 
