@@ -12,10 +12,32 @@ namespace Bonfire\Assets\Directives;
  */
 class DirectivesParser {
 
+    /**
+     * Stores the array of files that we've found
+     * and will be returning.
+     * @var array
+     */
     protected $files = [];
+
+    /**
+     * Stores the {tags} that can
+     * be detected withing directives
+     * for path manipulations.
+     *
+     * @var array
+     */
+    protected $tags = [];
 
     //--------------------------------------------------------------------
 
+    /**
+     * The main entry point to the class. Does the actual parsing
+     * of directives from the lines of a file.
+     *
+     * @param $lines
+     * @param $filename
+     * @return array
+     */
     public function parse ( $lines, $filename )
     {
         $included = [];
@@ -136,27 +158,6 @@ class DirectivesParser {
     //--------------------------------------------------------------------
 
     /**
-     * Converts custom tags (like {theme:x}) into the appropriate
-     * filepath.
-     *
-     * @param $filename
-     * @return string
-     */
-    private function translateTags ($filename)
-    {
-        // Theme
-        if (preg_match('/{theme:[a-zA-Z]+}/', $filename, $matches) !== false)
-        {
-            $theme_path = APPPATH .'../themes/';
-            $theme = trim( str_replace('theme:', '', $matches[0]), '{} ');
-
-            return $theme_path . $theme .'/'. str_replace($matches[0] .'/', '', $filename);
-        }
-    }
-
-    //--------------------------------------------------------------------
-
-    /**
      * Returns a structured array from $results, to be used like:
      *
      *      list($include, $exclude) = $this->structureDirectiveResults($results);
@@ -187,8 +188,72 @@ class DirectivesParser {
 
         return $data;
     }
-    
+
     //--------------------------------------------------------------------
+
+    //--------------------------------------------------------------------
+    // Tags
+    //--------------------------------------------------------------------
+
+    /**
+     * Registers a tag pattern to be used when processing directive paths.
+     *
+     * The pattern is used as the name when it's stored and can be de-registered
+     * by passing the pattern.
+     *
+     * The callback method must take 1 parameter: the $filename that we're processing
+     * and return the processed string.
+     *
+     * @param         $name         Just something to reference it by if we need to deregister.
+     * @param \Closure $callback     The method called on the string.
+     * @return $this
+     */
+    public function registerTag ($name, \Closure $callback)
+    {
+        // If it already exists, simply overwrite the callback.
+        $this->tags[$name] = $callback;
+
+        return $this;
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
+     * Removes a tag from the queue to process for each directive.
+     *
+     * @param $name
+     * @return $this
+     */
+    public function deregisterTag ($name)
+    {
+        if (isset($this->tags[$name]))
+        {
+            unset($this->tags[$name]);
+        }
+
+        return $this;
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
+     * Converts custom tags (like {theme:x}) into the appropriate
+     * filepath.
+     *
+     * @param $filename
+     * @return string
+     */
+    public function translateTags ($filename)
+    {
+        foreach ($this->tags as $name => $callback)
+        {
+            $filename = $callback($filename);
+        }
+        return $filename;
+    }
+
+    //--------------------------------------------------------------------
+
 
     //--------------------------------------------------------------------
     // The Directives

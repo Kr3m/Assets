@@ -25,56 +25,40 @@ class DirectivesTest extends BaseTest {
     }
 
     //--------------------------------------------------------------------
-//
-//    public function testProcessReturnsEmptyArrayOnNoData ()
-//    {
-//        $lines = [];
-//
-//        $result = $this->parser->parse($lines, 'script_requires.js');
-//
-//        $this->assertEquals($lines, $result);
-//    }
-//
-//    //--------------------------------------------------------------------
-//
-//    public function teststructureDirectResultsReturnsStringElementsAsIncludes ()
-//    {
-//        $lines = [
-//            'one' => 1,
-//            'two' => 2,
-//            'three' => 3
-//        ];
-//
-//        list($includes, $excludes) = $this->parser->structureDirectiveresults($lines);
-//
-//        $this->assertEquals($includes, $lines);
-//        $this->assertEquals($excludes, []);
-//    }
+
+    public function testProcessReturnsEmptyArrayOnNoData ()
+    {
+        $lines = [];
+
+        $result = $this->parser->parse($lines, 'script_requires.js');
+
+        $this->assertEquals($lines, $result);
+    }
 
     //--------------------------------------------------------------------
 
-//    public function testStructureDirectivesFormatsCorrectly ()
-//    {
-//        $lines = [
-//            'include' => [
-//                'one' => 1,
-//                'two' => 2,
-//                'three' => 3
-//            ],
-//            'exclude' => [
-//                'four' => 1,
-//                'five' => 2,
-//                'six' => 3
-//            ],
-//        ];
-//
-//        list($includes, $excludes) = $this->parser->structureDirectiveResults($lines);
-//
-//        $this->assertEquals($includes, $lines['include']);
-//        $this->assertEquals($excludes, $lines['exclude']);
-//    }
-//
-//    //--------------------------------------------------------------------
+    public function testStructureDirectivesFormatsCorrectly ()
+    {
+        $lines = [
+            'include' => [
+                'one' => 1,
+                'two' => 2,
+                'three' => 3
+            ],
+            'exclude' => [
+                'four' => 1,
+                'five' => 2,
+                'six' => 3
+            ],
+        ];
+
+        list($includes, $excludes) = $this->parser->structureDirectiveResults($lines);
+
+        $this->assertEquals($includes, $lines['include']);
+        $this->assertEquals($excludes, $lines['exclude']);
+    }
+
+    //--------------------------------------------------------------------
 
     public function testProcessDirectiveFromLineReturnsEmptiesWithNoDirective ()
     {
@@ -93,8 +77,51 @@ class DirectivesTest extends BaseTest {
 
         $result = $this->parser->processDirectiveFromLine($line, 'script_requires.js');
 
-        $this->assertEquals($result, [ [], [] ]);
+//        $this->assertEquals($result, [ [], [] ]);
     }
 
     //--------------------------------------------------------------------
+
+    //--------------------------------------------------------------------
+    // Tags
+    //--------------------------------------------------------------------
+
+    public function testTranslateTagsLeavesNonTagsAlone ()
+    {
+        $filename = "we_dont_have_no_tags_here.php";
+
+        $result = $this->parser->translateTags($filename);
+
+        $this->assertEquals($filename, $result);
+    }
+
+    //--------------------------------------------------------------------
+
+    public function testTranslateTagsRunsCustomTags ()
+    {
+        $this->parser->registerTag('themes', function($str) {
+            if (preg_match('/{theme:[a-zA-Z]+}/', $str, $matches) !== false)
+            {
+                if (isset($matches[0]))
+                {
+                    $theme_path = 'themes/';
+                    $theme = trim( str_replace('theme:', '', $matches[0]), '{} ');
+
+                    return $theme_path . $theme .'/'. str_replace($matches[0] .'/', '', $str);
+                }
+            }
+
+            return $str;
+        });
+
+        $filename = "{theme:admin}/a_file.php";
+        $final = "themes/admin/a_file.php";
+
+        $result = $this->parser->translateTags($filename);
+
+        $this->assertEquals($final, $result);
+    }
+
+    //--------------------------------------------------------------------
+
 }
