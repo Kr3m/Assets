@@ -447,7 +447,7 @@ class Asset {
         {
             foreach ($files as $file)
             {
-                $contents = "\n\n". file_get_contents($file);
+                $contents .= "\n\n". file_get_contents($file);
             }
         }
 
