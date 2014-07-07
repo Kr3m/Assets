@@ -434,6 +434,9 @@ class Asset {
      */
     protected function handleDirectives( $contents )
     {
+        $original_content = $contents;
+        $contents = '';
+
         $parser = new \Bonfire\Assets\Directives\DirectivesParser();
 
         if (is_array($this->tags) && count($this->tags))
@@ -441,17 +444,24 @@ class Asset {
             $parser->registerTags($this->tags);
         }
 
-        $files = $parser->parse( $contents, $this->filename );
+        $files = $parser->parse( $original_content, $this->filename );
 
         if (is_array($files))
         {
             foreach ($files as $file)
             {
-                $contents .= "\n\n". file_get_contents($file);
+                // Construct a simple header comment for each file
+                $header = "
+/*
+    File: {$file}
+*/";
+
+                $contents .= $header;
+                $contents .= file_get_contents($file);
             }
         }
 
-        return $contents;
+        return $contents . $original_content;
     }
 
     //--------------------------------------------------------------------
